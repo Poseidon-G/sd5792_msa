@@ -78,12 +78,12 @@ pipeline {
                         
                         sh """
                         # Ensure the KUBECONFIG file is set up for kubectl
-                        if [ ! -f "$KUBECONFIG_FILE" ]; then
-                            aws eks --region ${AWS_REGION} update-kubeconfig --name devops-cluster --kubeconfig ${KUBECONFIG_FILE}
+                        if [ ! -f '$KUBECONFIG_FILE' ]; then
+                            aws eks --region ${AWS_REGION} update-kubeconfig --name devops-cluster --kubeconfig '${KUBECONFIG_FILE}'
                         fi
 
                         # Export the kubeconfig to interact with the EKS cluster
-                        export KUBECONFIG=${KUBECONFIG_FILE}
+                        export KUBECONFIG='${KUBECONFIG_FILE}'
 
                         # Apply Kubernetes manifests for MongoDB, Backend, and Frontend
                         kubectl apply -f ./src/kubernetes/eks/mongodb.yaml
