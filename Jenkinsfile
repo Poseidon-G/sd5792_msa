@@ -16,7 +16,7 @@ pipeline {
             }
         }
 
-        stage('Login to ECR') {
+        stage('Build FE Docker Image and Push to ECR') {
             steps {
                 script {
                     echo "Logging in to Amazon ECR..."
@@ -27,11 +27,6 @@ pipeline {
                           """
                       }
                 }
-            }
-        }
-
-        stage('Build FE Docker Image and Push to ECR') {
-            steps {
                 script {
                     echo "Building FE Docker Image..."
                     sh """
@@ -48,6 +43,15 @@ pipeline {
 
         stage('Build BE Docker Image and Push to ECR') {
             steps {
+                script {
+                      echo "Logging in to Amazon ECR..."
+                      withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
+                            sh """
+                            aws configure set default.region '${AWS_REGION}'
+                            aws ecr get-login-password --region '${AWS_REGION}' | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                            """
+                        }
+                  }
                 script {
                     echo "Building BE Docker Image..."
                     sh """
