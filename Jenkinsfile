@@ -68,10 +68,6 @@ pipeline {
     }
 
     post {
-        always {
-            echo "Cleaning up Docker images..."
-            sh "docker rmi fe-image be-image"
-        }
 
         success {
             echo 'Pipeline devops for dev executed successfully!!'
