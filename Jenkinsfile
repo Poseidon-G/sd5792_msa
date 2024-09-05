@@ -36,12 +36,14 @@ pipeline {
                 script {
                     // Build FE Docker image
                     sh """
+                    echo "Building FE Docker Image"
                     docker build -t fe-image ./src/application/frontend
                     docker tag fe-image:latest ${FE_REPO}:latest
                     """
                 }
                 script {
                     // Push FE image to ECR
+                    echo "Pushing FE Docker Image to ECR"
                     sh "docker push ${FE_REPO}:latest"
                 }
             }
@@ -52,12 +54,14 @@ pipeline {
                 script {
                     // Build BE Docker image
                     sh """
+                    echo "Building BE Docker Image"
                     docker build -t be-image ./src/application/backend
                     docker tag be-image:latest ${BE_REPO}:latest
                     """
                 }
                 script {
                     // Push BE image to ECR
+                    echo "Pushing BE Docker Image to ECR"
                     sh "docker push ${BE_REPO}:latest"
                 }
             }
