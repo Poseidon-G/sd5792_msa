@@ -6,7 +6,6 @@ pipeline {
         AWS_ACCOUNT_ID = '800968498659'
         FE_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/devops-fe"
         BE_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/devops-be"
-        AWS_CREDENTIALS = credentials('aws-credentials')
     }
 
     stages {
@@ -21,12 +20,12 @@ pipeline {
             steps {
                 script {
                     echo "Logging in to Amazon ECR..."
-                    sh """
-                    aws configure set default.region ${AWS_REGION}
-                    aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-                    aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-                    """
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
+                          sh """
+                          aws configure set default.region '${AWS_REGION}'
+                          aws ecr get-login-password --region '${AWS_REGION}' | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                          """
+                      }
                 }
             }
         }
