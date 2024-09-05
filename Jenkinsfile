@@ -65,6 +65,36 @@ pipeline {
                 }
             }
         }
+        
+        // Deploy applications to eks cluster
+        stage('Deploy applications to EKS Cluster') {
+            steps {
+                script {
+                    echo "Deploying applications to EKS Cluster..."
+                    
+                    // AWS and kubeconfig credentials for EKS cluster authentication
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials'], 
+                                    file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
+                        
+                        sh """
+                        # Ensure the KUBECONFIG file is set up for kubectl
+                        if [ ! -f "$KUBECONFIG_FILE" ]; then
+                            aws eks --region ${AWS_REGION} update-kubeconfig --name devops-cluster --kubeconfig ${KUBECONFIG_FILE}
+                        fi
+
+                        # Export the kubeconfig to interact with the EKS cluster
+                        export KUBECONFIG=${KUBECONFIG_FILE}
+
+                        # Apply Kubernetes manifests for MongoDB, Backend, and Frontend
+                        kubectl apply -f ./src/kubernetes/eks/mongodb.yaml
+                        kubectl apply -f ./src/kubernetes/eks/backend.yaml
+                        kubectl apply -f ./src/kubernetes/eks/frontend.yaml
+                        """
+                    }
+                }
+            }
+        }
+
     }
 
     post {
