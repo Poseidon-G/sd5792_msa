@@ -23,8 +23,8 @@ pipeline {
                     echo "Logging in to Amazon ECR..."
                     sh """
                     aws configure set default.region ${AWS_REGION}
-                    aws configure set aws_access_key_id ${AWS_CREDENTIALS_USR}
-                    aws configure set aws_secret_access_key ${AWS_CREDENTIALS_PSW}
+                    aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+                    aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
                     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
                     """
                 }
