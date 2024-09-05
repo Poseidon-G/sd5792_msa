@@ -9,6 +9,16 @@ pipeline {
     }
 
     stages {
+
+        stage('Test tools installation') {
+            steps {
+                echo "Checking tools installation..."
+                sh 'docker --version'
+                sh 'aws --version'
+                sh 'kubectl version --client'
+            }
+        }
+
         stage('Checkout latest code from scm') {
             steps {
                 echo "Checking out latest code..."
