@@ -1,3 +1,14 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: mongo-sc
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+volumeBindingMode: WaitForFirstConsumer
+
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -28,13 +39,14 @@ data:
   MONGODB_INITDB_ROOT_PASSWORD: cGFzc3dvcmQK
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mongo
 spec:
   selector:
     matchLabels:
       name: mongo
+  serviceName: "mongo"
   replicas: 1
   template:
     metadata:
@@ -52,3 +64,16 @@ spec:
                name: mongo-config
          - secretRef:
              name: mongo-secrets
+        volumeMounts:
+            - name: data-volume
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: data-volume
+      spec:
+        storageClassName: mongo-sc
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "1Gi"
