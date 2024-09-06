@@ -89,7 +89,7 @@ pipeline {
                         sh """
                         # Ensure the KUBECONFIG file is set up for kubectl
                         if [ ! -f '$KUBECONFIG_FILE' ]; then
-                            aws eks --region ${AWS_REGION} update-kubeconfig --name devops-cluster --kubeconfig '${KUBECONFIG_FILE}'
+                            aws eks update-kubeconfig --region ${AWS_REGION} } --name sd5792 --kubeconfig '${KUBECONFIG_FILE}'
                         fi
 
                         # Export the kubeconfig to interact with the EKS cluster
